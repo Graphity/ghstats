@@ -1,3 +1,15 @@
 #+TITLE: GitHub Stats
 
-Testing out [[https://dash.plotly.com/][Dash]]
+Testing [[https://dash.plotly.com/][Dash]]
+
+* Install
+#+begin_src console
+git clone https://github.com/Graphity/ghstats.git
+cd ghstats
+pip install -r requirements.txt
+#+end_src
+
+* Run
+#+begin_src console
+python app.py
+#+end_src
