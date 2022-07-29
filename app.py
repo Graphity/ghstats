@@ -12,6 +12,8 @@ app = Dash(
     external_stylesheets=["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"]
 )
 
+server = app.server
+
 colors = {
     "fg": "#c9d1d9",
     "bg": "#0d1117",
