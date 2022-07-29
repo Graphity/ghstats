@@ -64,35 +64,37 @@ app.layout = html.Div([
     dcc.Graph(id="graph", figure=default_fig),
     html.Div(id="slider-container", children=[
         html.P("Drag slider to change the range"),
-        dcc.RangeSlider(0, 11, id="slider", step=None, value=[0, 11],
-                        marks={
-                            0: "Aug 2021",
-                            1: "Sep 2021",
-                            2: "Oct 2021",
-                            3: "Nov 2021",
-                            4: "Dec 2021",
-                            5: "Jan 2022",
-                            6: "Feb 2022",
-                            7: "Mar 2022",
-                            8: "Apr 2022",
-                            9: "May 2022",
-                            10: "Jun 2022",
-                            11: "Jul 2022"
-                        })
+        dcc.RangeSlider(0, 12, id="slider", step=None, value=[0, 12])
     ])
 ])
+
+@app.callback(
+    [
+        Output("slider", "max"),
+        Output("slider", "value"),
+        Output("slider", "marks")
+    ],
+    Input("search-input", "value")
+)
+def update_slider(username):
+    try:
+        user = GHCC(username)
+        months = [month['name'] for month in user.months]
+        _max = len(months) - 1
+        return _max, [0, _max], dict(enumerate(months))
+    except ValueError:
+        return 12, [0, 12], {}
 
 @app.callback(
     Output("graph", "figure"),
     [
         Input("search-input", "value"),
-        Input("search-button", "n_clicks"),
         Input("dropdown", "value"),
         Input("slider", "value")
     ],
     State("search-input", "value")
 )
-def update_graph(username, n_clicks, chart, month_range, username_submit):
+def update_graph(username, chart, month_range, username_submit):
     if not username or not chart:
         return default_fig
 
@@ -104,25 +106,10 @@ def update_graph(username, n_clicks, chart, month_range, username_submit):
     except ValueError:
         return default_fig
 
-    marks = {
-        0: "21-Aug",
-        1: "21-Sep",
-        2: "21-Oct",
-        3: "21-Nov",
-        4: "21-Dec",
-        5: "22-Jan",
-        6: "22-Feb",
-        7: "22-Mar",
-        8: "22-Apr",
-        9: "22-May",
-        10: "22-Jun",
-        11: "22-Jul"
-    }
+    a, b = month_range
     cal = []
-    x, y = month_range
-    for i in range(x, y+1):
-        for day in user.calendar[marks[i]]:
-            cal.append(day)
+    for month in user.months[a:b+1]:
+        cal += month['days']
     df = pd.DataFrame(cal)
     
     if chart == "bar":
